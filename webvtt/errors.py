@@ -44,6 +44,29 @@ class MalformedRegionError(MalformedCaptionError):
     """
 
 
+class MalformedSegmentError(WebVTTError, ValueError):
+    """
+    HLS WebVTT segment not in the right format for merging.
+
+    Raised when merging the WebVTT segments of an HLS playlist, e.g. for a
+    segment without an ``X-TIMESTAMP-MAP`` header, with one that is not
+    valid or conflicts with another, a segment whose timeline is not after
+    the previous one, a cue mapped to a negative time, a malformed cue or a
+    repeated cue identifier. The :attr:`segment` is the number of the
+    segment in the order given, from 1, and every message starts with it.
+    """
+
+    def __init__(self, segment: int, message: str):
+        """
+        Initialize.
+
+        :param segment: the number of the segment, from 1
+        :param message: the description of the problem
+        """
+        self.segment = segment
+        super().__init__(f'segment {segment}: {message}')
+
+
 class MissingFilenameError(WebVTTError):
     """
     Missing a filename when saving to disk.

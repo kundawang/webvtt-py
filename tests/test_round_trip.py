@@ -18,7 +18,7 @@ def _samples():
     return [
         (path, path.suffix[1:])
         for path in sorted(PATH_TO_SAMPLES.iterdir())
-        if path.name not in INVALID_SAMPLES
+        if path.is_file() and path.name not in INVALID_SAMPLES
         ]
 
 

@@ -1,0 +1,18 @@
+WEBVTT
+X-TIMESTAMP-MAP=LOCAL:00:00:01.000,MPEGTS:90028
+
+REGION
+id:fred
+width:40%
+
+STYLE
+::cue(.yellow) {
+  color: yellow;
+}
+
+charlie
+00:00:02.499 --> 00:00:03.499 line:0
+Charlie
+
+00:00:01.211 --> 00:00:02.011
+Delta

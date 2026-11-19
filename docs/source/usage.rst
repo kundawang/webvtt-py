@@ -850,6 +850,60 @@ last segment.
 Segmentation is also available from the command line, see :doc:`cli`.
 
 
+Merging HLS segments
+--------------------
+
+An HLS playlist delivers the captions as several WebVTT segments, each with
+its cues timed from the start of the segment and an ``X-TIMESTAMP-MAP``
+header. ``merge_segments`` reads the ordered segments, maps their cue times
+to the single timeline of the playlist and joins them into one
+:class:`~webvtt.WebVTT` instance:
+
+.. code-block:: python
+
+    import webvtt
+
+    # segments can be given as paths in the order of the playlist, or as
+    # WebVTT instances already read
+    first = webvtt.from_string(
+        'WEBVTT\n'
+        'X-TIMESTAMP-MAP=MPEGTS:900000,LOCAL:00:00:00.000\n'
+        '\n'
+        '00:00:00.500 --> 00:00:01.500\n'
+        'first'
+        )
+    second = webvtt.from_string(
+        'WEBVTT\n'
+        'X-TIMESTAMP-MAP=MPEGTS:1800000,LOCAL:00:00:00.000\n'
+        '\n'
+        '00:00:00.500 --> 00:00:01.500\n'
+        'second'
+        )
+    vtt = webvtt.merge_segments([first, second])
+    vtt.save('other/folder/captions.vtt')
+
+    # merge_folder('segments') does the same for the fileSequenceN.webvtt
+    # files of a folder, ordered by their sequence numbers
+
+The MPEG-TS value of each map is unwrapped across the 33-bit wraparounds of
+the MPEG-TS clock, and the LOCAL time of the segment is added, so cues keep
+their position on the playlist timeline. A cue that two adjacent segments
+repeat at the same time and with the same content, as a caption crossing a
+segment boundary, is kept once. Cue identifiers, cue settings, ``STYLE``
+and ``REGION`` blocks are kept, and the styles and regions repeated in every
+segment are merged once. The segment objects given as inputs are not
+changed, and the merged captions can be read back from the written file.
+
+Segments can also be given as paths. A segment without an
+``X-TIMESTAMP-MAP`` header, with one that is not valid or more than one,
+whose timeline is not after the previous segment, with a cue mapped to a
+negative time, a malformed cue or a repeated cue identifier raises
+:class:`~webvtt.errors.MalformedSegmentError`, whose ``segment`` is the number
+of the segment, from 1. Files are read with strict parsing; pass
+``strict=False`` to skip malformed blocks instead, keeping them in
+``parse_issues`` as when reading a file.
+
+
 Files with Byte Order Mark (BOM)
 --------------------------------
 

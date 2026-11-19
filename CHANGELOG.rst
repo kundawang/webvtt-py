@@ -10,6 +10,7 @@ Changes that may need updates to the code using the library:
 
 Changes:
 
+* Added ``merge_segments`` and ``merge_folder`` to merge the ordered WebVTT segments of an HLS playlist into one readable WebVTT file, mapping the local cue times to the playlist timeline with the ``X-TIMESTAMP-MAP`` headers, unwrapping the 33-bit MPEG-TS clock, deduplicating the cues repeated by adjacent segments and keeping the cue identifiers, cue settings, styles and regions, with ``MalformedSegmentError`` for a missing, invalid or conflicting map, a non-monotonic segment, a negative time, a malformed cue or a repeated cue identifier
 * Encode all HLS segments before writing any, so an encoding error in a later segment does not create or overwrite earlier segment files (#240)
 
 0.8.0 (08-11-2026)

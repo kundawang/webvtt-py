@@ -62,6 +62,40 @@ Segmenting for HLS
 
   webvtt.segment('captions.vtt', 'output/path')
 
+Merging HLS segments
+--------------------
+
+Merge the ordered WebVTT segments of a playlist back into one file. The
+``X-TIMESTAMP-MAP`` headers map the local cue times to the playlist timeline,
+unwrapping the 33-bit MPEG-TS clock, and cues repeated by adjacent segments
+are deduplicated while cue identifiers, settings, styles and regions are
+kept:
+
+.. code-block:: python
+
+  import webvtt
+
+  # segments are paths in playlist order, or WebVTT instances already read
+  first = webvtt.from_string(
+      'WEBVTT\n'
+      'X-TIMESTAMP-MAP=MPEGTS:900000,LOCAL:00:00:00.000\n'
+      '\n'
+      '00:00:00.500 --> 00:00:01.500\n'
+      'first'
+      )
+  second = webvtt.from_string(
+      'WEBVTT\n'
+      'X-TIMESTAMP-MAP=MPEGTS:1800000,LOCAL:00:00:00.000\n'
+      '\n'
+      '00:00:00.500 --> 00:00:01.500\n'
+      'second'
+      )
+  vtt = webvtt.merge_segments([first, second])
+  vtt.save('merged.vtt')
+
+  # merge_folder('output/path') does the same for every
+  # fileSequenceN.webvtt of a folder, in sequence order
+
 Converting captions from other formats
 --------------------------------------
 
